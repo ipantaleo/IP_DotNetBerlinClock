@@ -10,28 +10,55 @@ namespace BerlinClock
         public string convertTime(string aTime)
         {
             string berlinClock = "";
+            string[] listTime = aTime.Split(':');
+            int hours = int.Parse(listTime[0]);
+            int minutes = int.Parse(listTime[1]);
+            int seconds = int.Parse(listTime[2]);
 
-            switch (aTime)
+            berlinClock = seconds % 2 == 0 ? "Y\n" : "O\n";
+
+            //block 5 hours
+            int divisionHour = hours / 5;
+            berlinClock += ActivateLed(divisionHour, "R");
+            berlinClock += ActivateLed(4 - (divisionHour), "O") + "\n";
+
+            //block 1 hours
+            int restDivHour = hours % 5;
+            berlinClock += ActivateLed(restDivHour, "R");
+            berlinClock += ActivateLed(4 - (restDivHour), "O") + "\n";
+
+
+            //block 5 minutes
+            int divisionMinute = minutes / 5;
+            berlinClock += ActivateLed(divisionMinute, "Y", true);
+            berlinClock += ActivateLed(11 - (divisionMinute), "O") + "\n";
+
+
+            //block 1 minutes
+            int restDivMinute = minutes % 5;
+            berlinClock += ActivateLed(restDivMinute, "Y");
+            berlinClock += ActivateLed(4 - (restDivMinute), "O");
+
+
+            return berlinClock;
+        }
+
+        private string ActivateLed(int ntime, string color, bool? fiveMinutsBox = false)
+        {
+            string ledResult = "";
+            for (int i = 1; i <= ntime; i++)
             {
-                //case Just before midnight
-                case "23:59:59":
-                    berlinClock = "O\nRRRR\nRRRO\nYYRYYRYYRYY\nYYYY";
-                    break;
-                //case Middle of the afternoon
-                case "13:17:01":
-                    berlinClock = "O\nRROO\nRRRO\nYYROOOOOOOO\nYYOO";
-                    break;
-                //case Midnight 00:00
-                case "00:00:00":
-                    berlinClock = "Y\nOOOO\nOOOO\nOOOOOOOOOOO\nOOOO";
-                    break;
-                //case Midnight 24:00 
-                case "24:00:00":
-                    berlinClock = "Y\nRRRR\nRRRR\nOOOOOOOOOOO\nOOOO";
-                    break;
+                if (fiveMinutsBox.Value && i % 3 == 0)
+                {
+                    ledResult += "R";
+                }
+                else
+                {
+                    ledResult += color;
+                }
             }
-            
-            return berlinClock;        
+
+            return ledResult;
         }
     }
 }
